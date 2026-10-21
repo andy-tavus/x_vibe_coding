@@ -1,0 +1,126 @@
+/* Chrome 103: no nesting, no :has(), no cqw, no dvh/svh, no standalone translate/rotate/scale. */
+:root {
+  --z: 1;
+  --stage: 38%;
+  --stage-max: 420px;
+  --ink: #241e18;
+  --paper: #f4efe6;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+#app {
+  width: calc(100% / var(--z));
+  height: calc(100vh / var(--z));
+  transform: scale(var(--z));
+  transform-origin: 0 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.bar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 12px;
+  background: #fffdf8;
+  border-bottom: 1px solid #e4dccb;
+}
+
+.bar h1 {
+  margin: 0;
+  font-size: 1.35rem;
+}
+
+#zoom {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+#zoom button {
+  width: 44px;
+  height: 44px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  border: 2px solid var(--ink);
+  background: #fff;
+  color: var(--ink);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+#zoom span {
+  min-width: 52px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.call {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+
+.start {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  padding: 24px;
+  text-align: center;
+}
+
+.start p {
+  max-width: 38rem;
+  margin: 0;
+  font-size: 1.8rem;
+  line-height: 1.35;
+}
+
+.start button {
+  font: inherit;
+  font-size: 1.5rem;
+  font-weight: 700;
+  padding: 16px 28px;
+  border: none;
+  border-radius: 12px;
+  background: #2f6d4f;
+  color: #fff;
+  cursor: pointer;
+}
+
+.start button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.start .error {
+  color: #8a2b1d;
+  font-size: 1.2rem;
+}
+
+.lesson-canvas {
+  position: absolute !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  left: min(var(--stage), var(--stage-max)) !important;
+  right: 0 !important;
+  width: auto !important;
+  max-width: none !important;
+  height: auto !important;
+}
