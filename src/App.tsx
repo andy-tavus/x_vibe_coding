@@ -2,6 +2,8 @@ import { useCallback, useEffect, useState } from 'react'
 import { CVIProvider } from './components/cvi/components/cvi-provider'
 import { Conversation } from './components/cvi/components/conversation'
 import { MagicCanvas } from './components/cvi/components/magic-canvas'
+import type { CanvasInteractionEvent } from './components/cvi/components/magic-canvas/runtime'
+import { useSendAppMessage } from './components/cvi/hooks/cvi-events-hooks'
 import {
   createTavusConversation,
   endTavusConversation,
@@ -10,6 +12,24 @@ import {
 const PAL_ID = 'p4633735d729'
 const ZOOM_KEY = 'kinder-zoom'
 const STEPS = [1, 1.15, 1.3]
+
+// A closed picture sends nothing to the PAL, so it would wait for the student to type.
+function LessonCanvas() {
+  const sendAppMessage = useSendAppMessage()
+  const onInteraction = useCallback(
+    (event: CanvasInteractionEvent) => {
+      if (event.component !== 'canvas.image' || event.type !== 'dismiss') return
+      sendAppMessage({
+        message_type: 'conversation',
+        event_type: 'conversation.respond',
+        conversation_id: event.conversation_id,
+        properties: { text: 'Next.' },
+      })
+    },
+    [sendAppMessage],
+  )
+  return <MagicCanvas className="lesson-canvas" onInteraction={onInteraction} />
+}
 
 export default function App() {
   const [zoom, setZoom] = useState(1)
@@ -89,7 +109,7 @@ export default function App() {
         <CVIProvider>
           <div className="call">
             <Conversation conversationUrl={url} onLeave={leave} />
-            <MagicCanvas className="lesson-canvas" />
+            <LessonCanvas />
           </div>
         </CVIProvider>
       ) : (
