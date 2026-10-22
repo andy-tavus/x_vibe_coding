@@ -1,8 +1,10 @@
 /* Chrome 103: no nesting, no :has(), no cqw, no dvh/svh, no standalone translate/rotate/scale. */
 :root {
   --z: 1;
-  --stage: 38%;
-  --stage-max: 420px;
+  --stage: 30%;
+  --stage-max: 340px;
+  --cards: 32%;
+  --cards-max: 400px;
   --ink: #241e18;
   --paper: #f4efe6;
 }
@@ -119,8 +121,8 @@ body,
   top: 0 !important;
   bottom: 0 !important;
   left: min(var(--stage), var(--stage-max)) !important;
-  right: 0 !important;
-  width: auto !important;
+  right: auto !important;
+  width: min(var(--cards), var(--cards-max)) !important;
   max-width: none !important;
   height: auto !important;
 }

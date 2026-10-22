@@ -181,6 +181,8 @@ export const Conversation = React.memo(({ onLeave, conversationUrl }: Conversati
 							<ClosedCaptions />
 						</div>
 
+						<div className={styles.cardSpace}>Choices show up here.</div>
+
 						<ChatPanel />
 
 						<div
