@@ -91,6 +91,7 @@ body,
 }
 
 .start {
+  position: relative;
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -108,7 +109,7 @@ body,
   line-height: 1.35;
 }
 
-.start button {
+.start-lesson {
   padding: 0;
   border: none;
   border-radius: 18px;
@@ -117,15 +118,104 @@ body,
   line-height: 0;
 }
 
-.start button img {
+.start-lesson img {
   display: block;
   height: 84px;
   width: auto;
 }
 
-.start button:disabled {
+.start-lesson:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.start-lesson.starting:disabled {
   opacity: 0.6;
   cursor: wait;
+}
+
+.admin-open {
+  position: absolute;
+  left: 10px;
+  bottom: 8px;
+  border: none;
+  background: transparent;
+  color: #b7ad9f;
+  font-size: 12px;
+  padding: 4px;
+  cursor: pointer;
+}
+
+.admin-shade {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(36, 30, 24, 0.35);
+}
+
+.admin-panel {
+  width: 100%;
+  max-width: 360px;
+  box-sizing: border-box;
+  background: #fffdf8;
+  border: 1px solid #e4dccb;
+  border-radius: 16px;
+  padding: 20px;
+  text-align: left;
+}
+
+.admin-panel h2,
+.admin-panel p {
+  margin: 0 0 12px;
+  font-size: 1.05rem;
+  line-height: 1.35;
+}
+
+.admin-panel label {
+  display: block;
+  margin-bottom: 12px;
+  font-size: 1rem;
+}
+
+.admin-panel input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 6px;
+  min-height: 44px;
+  padding: 8px 10px;
+  font-size: 1rem;
+}
+
+.admin-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.admin-actions button {
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid #241e18;
+  border-radius: 10px;
+  background: #fffdf8;
+  color: #241e18;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.admin-actions button:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
+.admin-note {
+  color: #8a2b1d;
 }
 
 .start .error {

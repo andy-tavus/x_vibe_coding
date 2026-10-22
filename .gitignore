@@ -5,8 +5,10 @@ node_modules
 dist
 .env
 .env.local
+.env*
 dist-ssr
 *.local
+.data/
 .vscode/*
 !.vscode/extensions.json
 .idea

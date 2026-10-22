@@ -8,6 +8,13 @@
 
 const ENDPOINT = '/api/tavus';
 
+export class LessonUnavailable extends Error {
+	constructor() {
+		super('The lesson is not available.');
+		this.name = 'LessonUnavailable';
+	}
+}
+
 // Typed params for `POST /v2/conversations`. Mirrors the create-conversation
 // API; all fields optional here so you can omit anything that has a default
 // (e.g. `face_id` is not required when your PAL already has one).
@@ -66,6 +73,9 @@ export async function createTavusConversation(
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify({ action: 'create', params }),
 	});
+	if (res.status === 503) {
+		throw new LessonUnavailable();
+	}
 	if (!res.ok) {
 		throw new Error(`Tavus create failed: ${res.status} ${await res.text()}`);
 	}

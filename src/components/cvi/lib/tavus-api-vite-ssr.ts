@@ -29,6 +29,8 @@
 //     // pipe webRes back to `res`
 //   });
 
+import { lessonIsOpen, stampLessonParams } from '../../../../api/lesson-control.ts';
+
 const TAVUS_API_BASE = 'https://tavusapi.com/v2';
 
 type Body =
@@ -60,6 +62,12 @@ export async function handleTavusRequest(request: Request): Promise<Response> {
 	}
 
 	if (body.action === 'create') {
+		if (!(await lessonIsOpen())) {
+			return Response.json(
+				{ error: 'unavailable' },
+				{ status: 503, headers: { 'Cache-Control': 'no-store' } },
+			);
+		}
 		// To force EU AI Act behavior for every conversation, set `policy: 'eu'`
 		// here rather than relying on the caller — params come from the browser,
 		// so a client can drop or alter them. Tavus does not geolocate callers,
@@ -68,7 +76,7 @@ export async function handleTavusRequest(request: Request): Promise<Response> {
 		const r = await fetch(`${TAVUS_API_BASE}/conversations`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey },
-			body: JSON.stringify(body.params ?? {}),
+			body: JSON.stringify(stampLessonParams(body.params ?? {})),
 		});
 		if (!r.ok) {
 			return Response.json(

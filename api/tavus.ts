@@ -1,4 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
+import { lessonIsOpen, stampLessonParams } from './lesson-control.ts'
 
 const TAVUS_API_BASE = 'https://tavusapi.com/v2'
 
@@ -24,10 +25,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 	const body = (req.body ?? {}) as Body
 
 	if (body.action === 'create') {
+		if (!(await lessonIsOpen())) {
+			res.setHeader('Cache-Control', 'no-store')
+			res.status(503).json({ error: 'unavailable' })
+			return
+		}
 		const response = await fetch(`${TAVUS_API_BASE}/conversations`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey },
-			body: JSON.stringify(body.params ?? {}),
+			body: JSON.stringify(stampLessonParams(body.params ?? {})),
 		})
 		const text = await response.text()
 		if (!response.ok) {
