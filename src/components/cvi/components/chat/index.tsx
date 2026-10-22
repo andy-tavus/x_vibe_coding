@@ -110,8 +110,14 @@ const MessageBubble = memo(({ message }: { message: ChatMessage }) => {
 
 MessageBubble.displayName = 'MessageBubble';
 
+const PAGE_SIGNALS = new Set(['Start.', 'Next.']);
+
 export const ChatPanel = memo(() => {
-	const { isOpen, messages, sendMessage, conversationId } = useChatContext();
+	const { isOpen, messages: allMessages, sendMessage, conversationId } = useChatContext();
+	const messages = useMemo(
+		() => allMessages.filter((m) => !(m.role === 'user' && PAGE_SIGNALS.has(m.text.trim()))),
+		[allMessages]
+	);
 	const [draft, setDraft] = useState('');
 	const listRef = useRef<HTMLUListElement | null>(null);
 	const tail = messages.length > 0 ? messages[messages.length - 1].text : '';
