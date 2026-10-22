@@ -10,6 +10,8 @@ import React, {
 } from 'react';
 import { useChat, type ChatMessage } from '../../hooks/use-chat';
 import styles from './chat.module.css';
+import whatWeSaid from '../../../../assets/what-we-said.jpg';
+import sendLabel from '../../../../assets/send.png';
 
 type ChatContextValue = {
 	isOpen: boolean;
@@ -162,7 +164,7 @@ export const ChatPanel = memo(() => {
 			inert={!isOpen}
 		>
 			<header className={styles.header}>
-				<span>What we said</span>
+				<img src={whatWeSaid} alt="What we said" />
 			</header>
 
 			<ul ref={listRef} className={styles.messageList} role="log" aria-live="polite">
@@ -194,8 +196,8 @@ export const ChatPanel = memo(() => {
 					rows={4}
 					aria-label="Your answer"
 				/>
-				<button type="submit" className={styles.sendButton} disabled={!canSend}>
-					Send
+				<button type="submit" className={styles.sendButton} aria-label="Send" disabled={!canSend}>
+					<img src={sendLabel} alt="" />
 				</button>
 			</form>
 		</aside>

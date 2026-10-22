@@ -43,7 +43,14 @@ body,
 
 .bar h1 {
   margin: 0;
-  font-size: 1.35rem;
+  line-height: 0;
+}
+
+.bar h1 img {
+  display: block;
+  height: 52px;
+  width: auto;
+  max-width: 640px;
 }
 
 #zoom {
@@ -53,15 +60,22 @@ body,
 }
 
 #zoom button {
-  width: 44px;
-  height: 44px;
-  font-size: 1.5rem;
-  font-weight: 700;
-  border: 2px solid var(--ink);
-  background: #fff;
-  color: var(--ink);
-  border-radius: 8px;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  border-radius: 12px;
+  overflow: hidden;
   cursor: pointer;
+}
+
+#zoom button img {
+  display: block;
+  width: 132%;
+  height: 132%;
+  margin: -16%;
+  object-fit: cover;
 }
 
 #zoom span {

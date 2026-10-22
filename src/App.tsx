@@ -8,6 +8,9 @@ import {
   createTavusConversation,
   endTavusConversation,
 } from './components/cvi/lib/tavus-client'
+import lessonTitle from './assets/lesson-title.jpg'
+import zoomIn from './assets/zoom-in.jpg'
+import zoomOut from './assets/zoom-out.jpg'
 
 const PAL_ID = 'p4633735d729'
 const ZOOM_KEY = 'kinder-zoom'
@@ -158,14 +161,16 @@ export default function App() {
   return (
     <div id="app">
       <header className="bar">
-        <h1>Vibe-Coding with Puppet Mr. Wertner</h1>
+        <h1>
+          <img src={lessonTitle} alt="Vibe-Coding with Puppet Mr. Wertner" />
+        </h1>
         <div id="zoom">
           <button type="button" aria-label="Zoom out" onClick={() => changeZoom(-1)}>
-            −
+            <img src={zoomOut} alt="" />
           </button>
           <span>{zoomLabel}</span>
           <button type="button" aria-label="Zoom in" onClick={() => changeZoom(1)}>
-            +
+            <img src={zoomIn} alt="" />
           </button>
         </div>
       </header>

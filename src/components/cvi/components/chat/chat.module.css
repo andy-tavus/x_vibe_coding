@@ -64,12 +64,17 @@
 .header {
 	display: flex;
 	align-items: center;
-	justify-content: space-between;
-	padding: 0.5rem 1.25rem;
+	justify-content: flex-start;
+	padding: 0.4rem 0.75rem;
 	border-bottom: 1px solid #e4dccb;
-	font-weight: 700;
-	font-size: 1.35rem;
-	color: #241e18;
+	line-height: 0;
+}
+
+.header img {
+	display: block;
+	height: 44px;
+	width: auto;
+	max-width: 100%;
 }
 
 .closeButton {
@@ -192,21 +197,24 @@
 }
 
 .sendButton {
-	height: auto;
-	min-width: 7rem;
-	padding: 0 1rem;
+	width: 7.5rem;
+	padding: 0;
 	border-radius: 0.75rem;
-	background-color: #2f6d4f;
-	color: #fff;
+	background: transparent;
 	border: none;
 	cursor: pointer;
 	display: flex;
-	align-items: center;
+	align-items: stretch;
 	justify-content: center;
 	flex-shrink: 0;
-	font: inherit;
-	font-size: 1.45rem;
-	font-weight: 700;
+	overflow: hidden;
+}
+
+.sendButton img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
 }
 
 .sendButton:disabled {
