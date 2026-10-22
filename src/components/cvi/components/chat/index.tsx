@@ -117,7 +117,7 @@ const PAGE_SIGNALS = new Set(['Start.', 'Next.']);
 
 export const ChatPanel = memo(() => {
 	const { isOpen, messages: allMessages, sendMessage, conversationId } = useChatContext();
-	const { slidesDone, pictureUp, advancePicture } = useLessonControls();
+	const { slidesDone, introStarted, nextBusy, advancePicture } = useLessonControls();
 	const messages = useMemo(
 		() => allMessages.filter((m) => !(m.role === 'user' && PAGE_SIGNALS.has(m.text.trim()))),
 		[allMessages]
@@ -182,8 +182,8 @@ export const ChatPanel = memo(() => {
 			</ul>
 
 			<div className={styles.suggestions} aria-label="Shortcuts">
-				{pictureUp ? (
-					<button type="button" onClick={advancePicture}>
+				{introStarted && !slidesDone ? (
+					<button type="button" onClick={advancePicture} disabled={nextBusy}>
 						Next
 					</button>
 				) : null}

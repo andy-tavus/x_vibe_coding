@@ -3,14 +3,14 @@ import type { CanvasInteractionEvent } from './components/cvi/components/magic-c
 import {
   getShownCanvasComponent,
   isCanvasToolCallMessage,
-  parseCanvasControlCommand,
 } from './components/cvi/components/magic-canvas/runtime'
 import { useObservableEvent, useSendAppMessage } from './components/cvi/hooks/cvi-events-hooks'
 
 type LessonControlsValue = {
   ready: boolean
   slidesDone: boolean
-  pictureUp: boolean
+  introStarted: boolean
+  nextBusy: boolean
   advancePicture: () => void
   onInteraction: (event: CanvasInteractionEvent) => void
 }
@@ -29,13 +29,16 @@ export function useLessonControls() {
 export function LessonControlsProvider({ children }: { children: ReactNode }) {
   const sendAppMessage = useSendAppMessage()
   const started = useRef(false)
-  const speaking = useRef(false)
+  // Only the pal turn counts. Tavus also sends a replica copy, and treating
+  // that copy as a new turn left Next queued forever.
+  const palSpeaking = useRef(false)
   const conversationId = useRef<string | null>(null)
   const pendingPrompt = useRef<string | null>(null)
-  const advanced = useRef(false)
-  const seenPictures = useRef(new Set<string>())
+  const lastNext = useRef(0)
+  const retryTimer = useRef<number | null>(null)
   const [ready, setReady] = useState(false)
-  const [pictureUp, setPictureUp] = useState(false)
+  const [introStarted, setIntroStarted] = useState(false)
+  const [nextBusy, setNextBusy] = useState(false)
   const [slidesDone, setSlidesDone] = useState(false)
 
   const respond = useCallback(
@@ -50,6 +53,10 @@ export function LessonControlsProvider({ children }: { children: ReactNode }) {
   )
 
   const flush = useCallback(() => {
+    if (retryTimer.current !== null) {
+      window.clearTimeout(retryTimer.current)
+      retryTimer.current = null
+    }
     const id = conversationId.current
     const text = pendingPrompt.current
     if (!id || !text) return
@@ -62,23 +69,9 @@ export function LessonControlsProvider({ children }: { children: ReactNode }) {
       (event) => {
         if (event.event_type === 'conversation.tool_call' && isCanvasToolCallMessage(event)) {
           const shown = getShownCanvasComponent(event)
-          if (shown === 'canvas.image') {
-            const id = event.properties.tool_call_id
-            if (id) seenPictures.current.add(id)
-            advanced.current = false
-            setPictureUp(true)
-            return
-          }
-          if (shown) {
-            setPictureUp(false)
+          if (shown === 'canvas.image') return
+          if (shown === 'canvas.question' || shown === 'canvas.input' || shown === 'canvas.text') {
             setSlidesDone(true)
-            return
-          }
-          try {
-            const control = parseCanvasControlCommand(event)
-            if (control?.kind === 'clear') setPictureUp(false)
-          } catch {
-            // A malformed canvas command is not a picture advance.
           }
           return
         }
@@ -86,16 +79,27 @@ export function LessonControlsProvider({ children }: { children: ReactNode }) {
         if (event.event_type === 'conversation.started_speaking') {
           conversationId.current = event.conversation_id
           setReady(true)
-          if (event.properties.role !== 'user') speaking.current = true
+          if (event.properties.role === 'pal') palSpeaking.current = true
           return
         }
         if (event.event_type !== 'conversation.stopped_speaking') return
         conversationId.current = event.conversation_id
         setReady(true)
         if (event.properties.role === 'user') return
-        speaking.current = false
+        if (event.properties.role === 'replica') {
+          if (!started.current) {
+            started.current = true
+            setIntroStarted(true)
+            respond(event.conversation_id, 'Start.')
+          } else if (!palSpeaking.current) {
+            flush()
+          }
+          return
+        }
+        palSpeaking.current = false
         if (!started.current) {
           started.current = true
+          setIntroStarted(true)
           respond(event.conversation_id, 'Start.')
         } else {
           flush()
@@ -105,23 +109,26 @@ export function LessonControlsProvider({ children }: { children: ReactNode }) {
     ),
   )
 
-  const request = useCallback(
-    (text: string) => {
-      const id = conversationId.current
-      if (!id) return
-      if (speaking.current) pendingPrompt.current = text
-      else respond(id, text)
-    },
-    [respond],
-  )
-
   const finishPicture = useCallback(() => {
-    if (advanced.current) return
-    advanced.current = true
-    setPictureUp(false)
-    if (seenPictures.current.size >= 5) setSlidesDone(true)
-    request('Next.')
-  }, [request])
+    const now = Date.now()
+    if (now - lastNext.current < 900) return
+    lastNext.current = now
+    setNextBusy(true)
+    window.setTimeout(() => setNextBusy(false), 900)
+    const id = conversationId.current
+    if (!id) return
+    if (palSpeaking.current) {
+      pendingPrompt.current = 'Next.'
+      if (retryTimer.current !== null) window.clearTimeout(retryTimer.current)
+      retryTimer.current = window.setTimeout(() => {
+        retryTimer.current = null
+        palSpeaking.current = false
+        flush()
+      }, 1500)
+      return
+    }
+    respond(id, 'Next.')
+  }, [flush, respond])
 
   const onInteraction = useCallback(
     (event: CanvasInteractionEvent) => {
@@ -134,7 +141,7 @@ export function LessonControlsProvider({ children }: { children: ReactNode }) {
 
   return (
     <LessonControlsContext.Provider
-      value={{ ready, slidesDone, pictureUp, advancePicture: finishPicture, onInteraction }}
+      value={{ ready, slidesDone, introStarted, nextBusy, advancePicture: finishPicture, onInteraction }}
     >
       {children}
     </LessonControlsContext.Provider>
