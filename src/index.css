@@ -109,15 +109,18 @@ body,
 }
 
 .start button {
-  font: inherit;
-  font-size: 1.5rem;
-  font-weight: 700;
-  padding: 16px 28px;
+  padding: 0;
   border: none;
-  border-radius: 12px;
-  background: #2f6d4f;
-  color: #fff;
+  border-radius: 18px;
+  background: transparent;
   cursor: pointer;
+  line-height: 0;
+}
+
+.start button img {
+  display: block;
+  height: 84px;
+  width: auto;
 }
 
 .start button:disabled {

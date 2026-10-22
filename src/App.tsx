@@ -9,6 +9,7 @@ import {
   endTavusConversation,
 } from './components/cvi/lib/tavus-client'
 import lessonTitle from './assets/lesson-title.jpg'
+import startLesson from './assets/start-the-lesson.png'
 import zoomIn from './assets/zoom-in.jpg'
 import zoomOut from './assets/zoom-out.jpg'
 
@@ -183,8 +184,8 @@ export default function App() {
         </CVIProvider>
       ) : (
         <main className="start">
-          <button type="button" onClick={start} disabled={starting}>
-            {starting ? 'Starting.' : 'Start the lesson'}
+          <button type="button" onClick={start} disabled={starting} aria-label={starting ? 'Starting.' : 'Start the lesson'}>
+            <img src={startLesson} alt="" />
           </button>
           {error ? (
             <p className="error" role="alert">
