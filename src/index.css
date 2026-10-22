@@ -119,10 +119,45 @@ body,
 .lesson-canvas {
   position: absolute !important;
   top: 0 !important;
-  bottom: 0 !important;
+  bottom: 74px !important;
   left: min(var(--stage), var(--stage-max)) !important;
   right: auto !important;
   width: min(var(--cards), var(--cards-max)) !important;
   max-width: none !important;
   height: auto !important;
+}
+
+.lesson-help {
+  position: absolute;
+  z-index: 50;
+  left: min(var(--stage), var(--stage-max));
+  bottom: 0;
+  width: min(var(--cards), var(--cards-max));
+  min-height: 74px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px;
+  background: #ebe4d6;
+  border-top: 1px solid #d8cfbd;
+  border-right: 1px solid #d8cfbd;
+}
+
+.lesson-help button {
+  min-height: 46px;
+  padding: 8px 12px;
+  border: 2px solid #2f6d4f;
+  border-radius: 9px;
+  background: #fff;
+  color: #234f3b;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.lesson-help button:disabled {
+  opacity: 0.5;
+  cursor: wait;
 }

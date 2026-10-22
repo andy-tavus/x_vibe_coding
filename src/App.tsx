@@ -20,7 +20,9 @@ function LessonCanvas() {
   const sendAppMessage = useSendAppMessage()
   const started = useRef(false)
   const speaking = useRef(false)
-  const pendingNext = useRef<string | null>(null)
+  const conversationId = useRef<string | null>(null)
+  const pendingPrompt = useRef<string | null>(null)
+  const [ready, setReady] = useState(false)
 
   const respond = useCallback(
     (conversationId: string, text: string) =>
@@ -37,33 +39,60 @@ function LessonCanvas() {
     useCallback(
       (event) => {
         if (event.event_type === 'conversation.started_speaking') {
+          conversationId.current = event.conversation_id
+          setReady(true)
           if (event.properties.role !== 'user') speaking.current = true
           return
         }
         if (event.event_type !== 'conversation.stopped_speaking') return
+        conversationId.current = event.conversation_id
+        setReady(true)
         if (event.properties.role === 'user') return
         speaking.current = false
         if (!started.current) {
           started.current = true
           respond(event.conversation_id, 'Start.')
-        } else if (pendingNext.current) {
-          pendingNext.current = null
-          respond(event.conversation_id, 'Next.')
+        } else if (pendingPrompt.current) {
+          const text = pendingPrompt.current
+          pendingPrompt.current = null
+          respond(event.conversation_id, text)
         }
       },
       [respond],
     ),
   )
 
-  const onInteraction = useCallback(
-    (event: CanvasInteractionEvent) => {
-      if (event.component !== 'canvas.image' || event.type !== 'dismiss') return
-      if (speaking.current) pendingNext.current = event.conversation_id
-      else respond(event.conversation_id, 'Next.')
+  const request = useCallback(
+    (text: string) => {
+      const id = conversationId.current
+      if (!id) return
+      if (speaking.current) pendingPrompt.current = text
+      else respond(id, text)
     },
     [respond],
   )
-  return <MagicCanvas className="lesson-canvas" onInteraction={onInteraction} />
+
+  const onInteraction = useCallback(
+    (event: CanvasInteractionEvent) => {
+      if (event.component !== 'canvas.image' || event.type !== 'dismiss') return
+      conversationId.current = event.conversation_id
+      request('Next.')
+    },
+    [request],
+  )
+  return (
+    <>
+      <MagicCanvas className="lesson-canvas" onInteraction={onInteraction} />
+      <div className="lesson-help" aria-label="Lesson help">
+        <button type="button" disabled={!ready} onClick={() => request('Give me choices.')}>
+          Give me choices
+        </button>
+        <button type="button" disabled={!ready} onClick={() => request('Explain more.')}>
+          Explain more
+        </button>
+      </div>
+    </>
+  )
 }
 
 export default function App() {
