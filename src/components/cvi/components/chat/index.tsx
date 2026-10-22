@@ -12,6 +12,7 @@ import { useChat, type ChatMessage } from '../../hooks/use-chat';
 import styles from './chat.module.css';
 import whatWeSaid from '../../../../assets/what-we-said.jpg';
 import sendLabel from '../../../../assets/send.png';
+import { useLessonControls } from '../../../../lesson-controls';
 
 type ChatContextValue = {
 	isOpen: boolean;
@@ -116,6 +117,7 @@ const PAGE_SIGNALS = new Set(['Start.', 'Next.']);
 
 export const ChatPanel = memo(() => {
 	const { isOpen, messages: allMessages, sendMessage, conversationId } = useChatContext();
+	const { slidesDone, pictureUp, advancePicture } = useLessonControls();
 	const messages = useMemo(
 		() => allMessages.filter((m) => !(m.role === 'user' && PAGE_SIGNALS.has(m.text.trim()))),
 		[allMessages]
@@ -179,6 +181,28 @@ export const ChatPanel = memo(() => {
 				)}
 			</ul>
 
+			<div className={styles.suggestions} aria-label="Shortcuts">
+				{pictureUp ? (
+					<button type="button" onClick={advancePicture}>
+						Next
+					</button>
+				) : null}
+				<button
+					type="button"
+					disabled={!slidesDone || !conversationId}
+					onClick={() => sendMessage('Give me choices.')}
+				>
+					Choices
+				</button>
+				<button
+					type="button"
+					disabled={!slidesDone || !conversationId}
+					onClick={() => sendMessage('Explain more.')}
+				>
+					Explain
+				</button>
+			</div>
+
 			<form
 				className={styles.composer}
 				onSubmit={(e) => {
@@ -193,7 +217,7 @@ export const ChatPanel = memo(() => {
 					onKeyDown={onKeyDown}
 					placeholder={conversationId ? 'Type your answer here.' : 'Connecting.'}
 					disabled={!conversationId}
-					rows={4}
+					rows={3}
 					aria-label="Your answer"
 				/>
 				<button type="submit" className={styles.sendButton} aria-label="Send" disabled={!canSend}>

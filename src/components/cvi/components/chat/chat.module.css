@@ -162,12 +162,37 @@
 	text-align: start;
 }
 
+.suggestions {
+	flex: none;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	padding: 8px 12px 0;
+}
+
+.suggestions button {
+	min-height: 36px;
+	padding: 4px 14px;
+	border: 2px solid #2f6d4f;
+	border-radius: 999px;
+	background: #fff;
+	color: #234f3b;
+	font: inherit;
+	font-size: 1.05rem;
+	font-weight: 700;
+	cursor: pointer;
+}
+
+.suggestions button:disabled {
+	opacity: 0.4;
+	cursor: default;
+}
+
 .composer {
 	flex: none;
 	display: flex;
 	gap: 0.5rem;
-	padding: 0.75rem;
-	border-top: 2px solid #e4dccb;
+	padding: 8px 12px 0.75rem;
 	align-items: stretch;
 	padding-bottom: max(0.75rem, env(safe-area-inset-bottom, 0));
 }
@@ -175,8 +200,8 @@
 .composerInput {
 	flex: 1;
 	resize: none;
-	min-height: 6.5rem;
-	max-height: 8rem;
+	min-height: 5rem;
+	max-height: 6.5rem;
 	padding: 0.75rem 1rem;
 	border-radius: 0.75rem;
 	background-color: #fff;
